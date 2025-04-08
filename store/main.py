@@ -11,9 +11,9 @@ app = FastAPI()
 
 # app.include_router(book_router)
 # app.include_router(author_router)
-app.include_router(user_router)
+# app.include_router(user_router)
 # app.include_router(review_router)
-# app.include_router(category_router)
+app.include_router(category_router)
 
 @app.get("/")
 async def root():
