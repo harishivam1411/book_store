@@ -9,6 +9,8 @@ class ReviewService:
     def __init__(self, db : AsyncIOMotorClient):
         self.db = db
         self.collection = db.review
+        self.user_collection = db.user
+        self.book_collection = db.book
 
     async def retrieve_reviews(self, book_id: str) -> list[ReviewResponse]:
         result = self.collection.find()

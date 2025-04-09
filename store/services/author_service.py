@@ -9,6 +9,7 @@ class AuthorService:
     def __init__(self, db : AsyncIOMotorClient):
         self.db = db
         self.collection = db.author
+        self.book_collection = db.book
 
     async def retrieve_authors(self) -> list[AuthorResponse]:
         result = self.collection.find()
