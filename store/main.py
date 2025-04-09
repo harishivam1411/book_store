@@ -9,10 +9,10 @@ from store.routers.category_router import category_router
 
 app = FastAPI()
 
-# app.include_router(book_router)
-# app.include_router(author_router)
-# app.include_router(user_router)
-# app.include_router(review_router)
+app.include_router(book_router)
+app.include_router(author_router)
+app.include_router(user_router)
+app.include_router(review_router)
 app.include_router(category_router)
 
 @app.get("/")
@@ -20,4 +20,4 @@ async def root():
     return "Book server is up and running"
 
 if __name__ == "__main__":
-    uvicorn.run("store.main:app")
+    uvicorn.run("store.main:app", host="127.0.0.1", port=8000, reload=True)

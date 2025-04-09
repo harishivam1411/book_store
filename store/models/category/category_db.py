@@ -1,10 +1,8 @@
-from pydantic import BaseModel, Field
-from datetime import datetime, timezone
+from pydantic import Field
+from store.models.base.base_db import CreateUpdateSchema
 
-class Category(BaseModel):
+class Category(CreateUpdateSchema):
     name: str = Field(...)
     description: str = Field(None)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
+    book_count: int = Field(0)
     

@@ -2,12 +2,12 @@ from fastapi import APIRouter, Depends
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from store.database import get_database
-from store.models.category.category_model import CategoryCreate, CategoryCreateResponse, CategoryResponse, CategorySingleResponse, CategoryUpdate, CategoryUpdateResponse
 from store.services.category_service import CategoryService
+from store.models.category.category_model import CategoryCreate, CategoryUpdate, CategoryCreateResponse, CategoryUpdateResponse, CategoryResponse, CategorysResponse
 
 category_router = APIRouter(prefix='/categories', tags=['Categories'])
 
-@category_router.get('/', response_model=list[CategoryResponse])
+@category_router.get('/', response_model=list[CategorysResponse])
 async def retrieve_categories(db: AsyncIOMotorClient = Depends(get_database)):
     service = CategoryService(db)
     return await service.retrieve_categories()
@@ -17,7 +17,7 @@ async def create_category(category: CategoryCreate, db: AsyncIOMotorClient = Dep
     service = CategoryService(db)
     return await service.create_category(category)
 
-@category_router.get('/{category_id}', response_model=CategorySingleResponse)
+@category_router.get('/{category_id}', response_model=CategoryResponse)
 async def retrieve_category(category_id: str, db: AsyncIOMotorClient = Depends(get_database)):
     service = CategoryService(db)
     return await service.retrieve_category(category_id)
