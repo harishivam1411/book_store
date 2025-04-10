@@ -2,10 +2,6 @@ from pydantic import BaseModel, Field
 
 from store.models.base.base_model import CreateUpdateSchema, BaseSchema
 
-class ErrorDetailsSchema(BaseModel):
-    isbn: list[str] = ["ISBN format is invalid"]
-    author_id: list[str] = ["Author with ID 456 does not exist"]
-
 class BookCreate(BaseModel):
     title : str = Field(..., examples=["The Great Gatsby"])
     isbn : str = Field(..., examples=["9780451524935"])
@@ -25,11 +21,6 @@ class BookUpdate(BaseModel):
     language : str = Field(None, examples=["en"])
     author_id : str = Field(None,examples=["6683f946ec61bfa6a3c2d7c7"])
     category_ids : list[str] = Field([], examples=[["6683f946ec61bfa6a3c2d7c7","6683f946ec61bfa6a3c2d7c7"]])
-
-class BookCreateErrorResponse(BaseModel):
-    error: str = "Bad Request"
-    message: str = "Invalid input data"
-    details: ErrorDetailsSchema = ErrorDetailsSchema()
 
 class BookCreateResponse(CreateUpdateSchema):
     title : str = Field(..., examples=["The Great Gatsby"])

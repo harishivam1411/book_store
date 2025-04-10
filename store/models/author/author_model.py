@@ -42,6 +42,7 @@ class AuthorResponse(CreateUpdateSchema):
     birth_date: str = Field(..., examples=["1947-09-21"])
     death_date: Optional[str] = Field(None, examples=["1973-09-02"])
     country: str = Field(None, examples=["United States"])
+    book_count : int = Field(0, examples=[12])
     books : list[AuthorBooksSchema] = Field([], examples=[[
         AuthorBooksSchema(id="6683f946ec61bfa6a3c2d7c7", title="The Hobbit", isbn="9780547928227", publication_date="1937-09-21"),
         AuthorBooksSchema(id="6683f946ec61bfa6a3c2d7c7", title="The Hobbit", isbn="9780547928227", publication_date="1937-09-21")]])

@@ -276,10 +276,16 @@ authors test data
     "biography": "English novelist and poet, author of 'Jane Eyre'.",
     "birth_date": "1816-04-21",
     "country": "United Kingdom"
+  },
+  {
+    "name": "J.R.R. Tolkien",
+    "biography": "John Ronald Reuel Tolkien was an English writer, poet, philologist, and academic.",
+    "birth_date": "1892-01-03",
+    "country": "United Kingdom"
   }
 ]
 
-category test data
+categories test data
 
 [
   {
@@ -339,4 +345,62 @@ category test data
     "description": "Books written to guide readers to solve personal problems"
   }
 ]
+
+
+reviews test data
+
+[
+  {
+    "rating": 5,
+    "title": "A timeless masterpiece",
+    "content": "This book blew me away. The writing is beautiful and the themes are still relevant."
+  },
+  {
+    "rating": 4,
+    "title": "Chillingly accurate",
+    "content": "Orwell really predicted the surveillance state. A bit dry in parts, but impactful."
+  },
+  {
+    "rating": 3,
+    "title": "A slow start, but worth it",
+    "content": "Takes a while to get into, but has great character development."
+  },
+  {
+    "rating": 2,
+    "title": "Too long and dense",
+    "content": "I appreciate the symbolism, but this was hard to get through."
+  },
+  {
+    "rating": 4,
+    "title": "Emotional and raw",
+    "content": "Beautiful father-son story in a broken world. Haunting."
+  },
+  {
+    "rating": 5,
+    "title": "Hauntingly beautiful",
+    "content": "A deeply emotional exploration of history and trauma."
+  },
+  {
+    "rating": 5,
+    "title": "Darkly humorous and brilliant",
+    "content": "Vonnegut's style is unique and the message is powerful."
+  },
+  {
+    "rating": 4,
+    "title": "Heavy but powerful",
+    "content": "Not an easy read, but a deep dive into the human psyche."
+  },
+  {
+    "rating": 3,
+    "title": "Interesting concept",
+    "content": "Frankenstein's themes are great, but the style was tough for me."
+  },
+  {
+    "rating": 5,
+    "title": "Loved it!",
+    "content": "One of the best books I’ve read this year. A perfect mix of romance and independence."
+  }
+]
+
+
 

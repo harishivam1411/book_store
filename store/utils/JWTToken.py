@@ -19,8 +19,8 @@ class JWTBearer(HTTPBearer):
         if credentials:
             if not credentials.scheme == "Bearer":
                 raise HTTPException(status_code=403, detail="Invalid authentication scheme.")
-            payload = verify_jwt(credentials.credentials,is_refresh=False)
-            if payload.email is None:
+            payload = verify_jwt(credentials.credentials, is_refresh=False)
+            if payload.username is None:
                 raise HTTPException(status_code=403, detail="Invalid token or expired token.")
             return payload
         else:

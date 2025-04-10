@@ -9,4 +9,4 @@ class User(CreateUpdateSchema):
     first_name: str = Field(...)
     last_name: str = Field(...)
     review_count: int = Field(0)
-    recent_reviews: RecentReviewsSchema = Field([])
+    recent_reviews: list[RecentReviewsSchema] = Field([])
