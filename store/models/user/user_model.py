@@ -9,7 +9,7 @@ class RecentReviewsSchema(CreateSchema):
 class UserCreate(BaseModel):
     username : str = Field(..., examples=["booklover99"])
     email : EmailStr = Field(..., examples=["newuser@example.com"])
-    password : str = Field(..., examples=["securePassword123"])
+    password : str = Field(..., examples=["password123"])
     first_name : str = Field(..., examples=["John"])
     last_name : str = Field(..., examples=["Doe"])
     

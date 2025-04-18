@@ -22,17 +22,3 @@ class CreateUpdateSchema(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-class TokenRequest(BaseModel):
-    id: str
-    username: str
-
-class TokenPayload(BaseModel):
-    exp: int = None
-    username: str = None
-    id: str = None
-    token_type: str = None
-
-class TokenResponse(BaseModel):
-    access_token: str = Field(...)
-    refresh_token: str = Field(...)
-

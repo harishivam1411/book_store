@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from store.database import get_database
+from store.utils.dependencies import get_current_user
+from store.models.auth.auth_model import TokenPayload
 from store.services.category_service import CategoryService
 from store.models.category.category_model import CategoryCreate, CategoryUpdate, CategoryCreateResponse, CategoryUpdateResponse, CategoryResponse, CategorysResponse
 

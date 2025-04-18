@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from store.database import get_database
+from store.utils.dependencies import get_current_user
+from store.models.auth.auth_model import TokenPayload
 from store.services.user_service import UserService
 from store.models.user.user_model import UserCreate, UserUpdate, UserCreateResponse, UserUpdateResponse, UserResponse, UsersResponse
 
@@ -18,11 +20,15 @@ async def create_user(user: UserCreate, db: AsyncIOMotorClient = Depends(get_dat
     return await service.create_user(user)
 
 @user_router.get('/{user_id}', response_model=UserResponse)
-async def retrieve_user(user_id: str, db: AsyncIOMotorClient = Depends(get_database)):
+async def retrieve_user(user_id: str, db: AsyncIOMotorClient = Depends(get_database), current_user: TokenPayload = Depends(get_current_user)):
+    if current_user.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this user")
     service = UserService(db)
     return await service.retrieve_user(user_id)
 
 @user_router.put('/{user_id}', response_model=UserUpdateResponse)
-async def update_user(user_id: str, user: UserUpdate, db: AsyncIOMotorClient = Depends(get_database)):
+async def update_user(user_id: str, user: UserUpdate, db: AsyncIOMotorClient = Depends(get_database), current_user: TokenPayload = Depends(get_current_user)):
+    if current_user.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this user")
     service = UserService(db)
     return await service.update_user(user_id, user)

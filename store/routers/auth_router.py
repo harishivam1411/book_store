@@ -1,35 +1,58 @@
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, Depends, status
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from store.database import get_database
-from store.models.auth.auth_model import UserAuthCreate
-from store.models.base.base_model import TokenResponse
+from store.utils.dependencies import validate_access_token, validate_refresh_token
+from store.models.user.user_model import UserCreate
+from store.models.auth.auth_model import TokenResponse, TokenPayload, PasswordReset, UserLogin
 from store.services.auth_service import AuthService
-from store.utils.util import validate_token
 
 auth_router = APIRouter(prefix='/auth', tags=['Auth'])
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
-@auth_router.post('/', status_code=201)
-async def create_user(user: UserAuthCreate, db: AsyncIOMotorClient = Depends(get_database)):
+@auth_router.post(
+    "/token/",
+    response_model=TokenResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Authenticate user and get tokens",
+    description="Authenticates a user and returns access and refresh tokens"
+)
+async def login(
+    user_credentials: UserLogin, db: AsyncIOMotorClient = Depends(get_database)):
     service = AuthService(db)
-    return await service.create_user(user)
+    return await service.login_user(user_credentials)
 
-@auth_router.post('/token', response_model=TokenResponse)
-async def login(user: UserAuthCreate, db: AsyncIOMotorClient = Depends(get_database)):
+# @auth_router.post(
+#     "/refresh/",
+#     response_model=TokenResponse,
+#     status_code=status.HTTP_200_OK,
+#     summary="Refresh tokens",
+#     description="Use a refresh token to get a new access token"
+# )
+# async def refresh_tokens(
+#     token_data: TokenPayload = Depends(validate_refresh_token), db: AsyncIOMotorClient = Depends(get_database)):
+#     service = AuthService(db)
+#     return await service.refresh_tokens(token_data.user_id)
+
+@auth_router.post(
+    "/register/",
+    response_model=TokenResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Register new user",
+    description="Register a new user and return access and refresh tokens"
+)
+async def register_user(
+    user_data: UserCreate, db: AsyncIOMotorClient = Depends(get_database) ):
     service = AuthService(db)
-    return await service.login(user)
+    return await service.register_user(user_data)
 
-@auth_router.post('/refresh', response_model=dict)
-async def refresh_token(refresh_token: str, db: AsyncIOMotorClient = Depends(get_database)):
-    service = AuthService(db)
-    return await service.refresh_token(refresh_token)
-
-@auth_router.post('/validate', response_model=dict)
-async def validate_access_token(token: str = Depends(oauth2_scheme)):
-    """Validate an access token and return payload if valid"""
-    result = validate_token(token)
-    if not result.get("valid"):
-        raise HTTPException(status_code=401, detail=result.get("error", "Invalid token"))
-    return {"valid": True, "payload": result["payload"]}
+# @auth_router.put(
+#     "/reset-password/",
+#     status_code=status.HTTP_200_OK,
+#     summary="Reset password",
+#     description="Reset user password"
+# )
+# async def reset_password(
+#     password_data: PasswordReset,
+#     token_data: TokenPayload = Depends(validate_access_token), db: AsyncIOMotorClient = Depends(get_database)):
+#     service = AuthService(db)
+#     return await service.reset_password(token_data.user_id, password_data)

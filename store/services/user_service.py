@@ -67,14 +67,14 @@ class UserService:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    async def update_user(self, user_id: str, user: UserUpdate) -> UserUpdateResponse:
+    async def update_user(self, user_id: str, user_update: UserUpdate) -> UserUpdateResponse:
         # Check if user exists
         user = await self.collection.find_one({"_id": ObjectId(user_id)})
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
         # Update only provided fields
-        update_data = user.model_dump(exclude_unset=True)
+        update_data = user_update.model_dump(exclude_unset=True)
         
         # Check if username or email are being updated and if they already exist
         if "username" in update_data:

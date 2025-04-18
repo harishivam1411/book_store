@@ -1,11 +1,30 @@
-from pydantic import BaseModel, Field
+from datetime import datetime
+from typing import Annotated, Optional
+from pydantic import BaseModel, Field, EmailStr
 
-from store.models.base.base_model import CreateSchema
+TokenStr = Annotated[str, Field(..., examples=["eyJQGdtYWlsLmNvbSIsImlkIjoiNzBjMzhkYTEtNmEzYS00NDQ2LTg5MGMtNDYzOTM4YzA0Nm"
+                                             "FhIiwidG9rZW5fdHlwZSI6ImFjY2Vzc190b2tlbiJ9.IJI-K-BsqODkgjI8MN-NBxBKmIxQ6z_ZOLhmKWMouTc"])]
+EmailExample = Annotated[EmailStr, Field(..., json_schema_extra={'examples': ['bookstore@example.com']})]
+PasswordExample = Annotated[str, Field(..., json_schema_extra={'examples': ['password123']})]
 
-class UserAuthCreate(BaseModel):
-    username: str = Field(..., examples=["booklover99"])
-    password: str = Field(..., examples=["securePassword123"])
+class TokenRequest(BaseModel):
+    id: str
+    username: str
 
-class UserAuthResponse(CreateSchema):
-    username: str = Field(..., examples=["booklover99"])
-    password: str = Field(..., examples=["securePassword123"])
+class TokenResponse(BaseModel):
+    access_token: TokenStr
+    refresh_token: TokenStr
+
+class TokenPayload(BaseModel):
+    user_id: str
+    exp: datetime
+    token_type: str
+    valid: bool = True
+
+class UserLogin(BaseModel):
+    username: str = Field(..., example="booklover99")
+    password: PasswordExample
+
+class PasswordReset(BaseModel):
+    old_password: Optional[PasswordExample] = None
+    new_password: PasswordExample

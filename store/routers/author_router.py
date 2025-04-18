@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from store.database import get_database
+from store.utils.dependencies import get_current_user
+from store.models.auth.auth_model import TokenPayload
 from store.services.author_service import AuthorService
 from store.models.author.author_model import AuthorCreate, AuthorUpdate, AuthorCreateResponse, AuthorUpdateResponse, AuthorResponse, AuthorsResponse
 
