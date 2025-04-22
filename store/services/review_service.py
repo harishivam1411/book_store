@@ -27,7 +27,6 @@ class ReviewService:
             review_copy = review.copy()  
             review_copy = self.__replace_id(review_copy)
             
-            # Ensure user field exists with proper structure
             if "user_id" in review_copy and not review_copy.get("user"):
                 try:
                     user = await self.user_collection.find_one({"_id": ObjectId(review_copy["user_id"])})
@@ -50,12 +49,11 @@ class ReviewService:
         return reviews
 
     async def create_review(self, book_id: str, user_id: str, review_create: ReviewCreate) -> ReviewCreateResponse:
-        # Check book exists
+       
         book = await self.book_collection.find_one({"_id": ObjectId(book_id)})
         if not book:
             raise HTTPException(status_code=404, detail="Book not found")
 
-        # Try to retrieve user
         try:
             user = await self.user_collection.find_one({"_id": ObjectId(user_id)})
         except:
@@ -66,7 +64,7 @@ class ReviewService:
             
         user = self.__replace_id(user)
 
-        # Check for existing review
+        
         existing_review = await self.collection.find_one({
             "book_id": book_id,
             "user_id": user_id
@@ -74,7 +72,7 @@ class ReviewService:
         if existing_review:
             raise HTTPException(status_code=400, detail="User has already reviewed this book")
 
-        # Include full user info
+       
         review_dict = review_create.model_dump()
         review_dict["book_id"] = book_id
         review_dict["user_id"] = user_id
@@ -87,11 +85,11 @@ class ReviewService:
         review_dict["created_at"] = datetime.now(timezone.utc)
         review_dict["updated_at"] = datetime.now(timezone.utc)
 
-        # Insert review
+        
         review = Review(**review_dict)
         result = await self.collection.insert_one(review.model_dump())
 
-        # Update user profile (recent_reviews)
+        
         user_id_obj = ObjectId(user_id) if not isinstance(user["id"], ObjectId) else user["id"]
         await self.user_collection.update_one(
             {"_id": user_id_obj},
@@ -108,7 +106,7 @@ class ReviewService:
             }
         )
 
-        # Recalculate average rating
+       
         book_reviews = self.collection.find({"book_id": book_id})
         total_rating = count = 0
         async for r in book_reviews:
@@ -126,7 +124,7 @@ class ReviewService:
         inserted_review = await self.collection.find_one({"_id": result.inserted_id})
         inserted_review = self.__replace_id(inserted_review)
         
-        # Ensure user field is properly formatted
+       
         if "user" not in inserted_review or not isinstance(inserted_review["user"], dict):
             inserted_review["user"] = review_dict["user"]
 
@@ -134,10 +132,10 @@ class ReviewService:
 
     async def retrieve_review(self, book_id: str, review_id: str) -> ReviewResponse:
         try:
-            # Convert IDs to proper format for query
+        
             review_obj_id = ObjectId(review_id)
             
-            # Find the review
+          
             review = await self.collection.find_one({
                 "_id": review_obj_id,
                 "book_id": book_id
@@ -146,10 +144,10 @@ class ReviewService:
             if not review:
                 raise HTTPException(status_code=404, detail="Review not found")
             
-            # Convert _id to id
+           
             review = self.__replace_id(review)
                 
-            # Get complete user details
+         
             user_id = review.get("user_id")
             if user_id:
                 try:
@@ -166,14 +164,14 @@ class ReviewService:
                         "last_name": user.get("last_name", "")
                     }
                 else:
-                    # Fallback user info if user record not found
+                
                     review["user"] = {
                         "id": user_id,
                         "username": "Unknown user",
                         "first_name": "",
                         "last_name": ""
                     }
-            # If user field already exists but is incomplete, ensure it has all required fields
+            
             elif "user" in review and isinstance(review["user"], dict):
                 user_dict = review["user"]
                 if "first_name" not in user_dict or "last_name" not in user_dict:
@@ -191,11 +189,11 @@ class ReviewService:
                             "last_name": user.get("last_name", "")
                         }
                     else:
-                        # Ensure required fields exist
+                     
                         review["user"]["first_name"] = review["user"].get("first_name", "")
                         review["user"]["last_name"] = review["user"].get("last_name", "")
             else:
-                # Create default user info if nothing available
+              
                 review["user"] = {
                     "id": "unknown",
                     "username": "Unknown user",
@@ -212,7 +210,7 @@ class ReviewService:
 
     async def update_review(self, book_id: str, review_id: str, user_id: str, review_update: ReviewUpdate) -> ReviewUpdateResponse:
         try:
-            # Find the review first
+       
             review = await self.collection.find_one({
                 "_id": ObjectId(review_id),
                 "book_id": book_id
@@ -221,7 +219,7 @@ class ReviewService:
             if not review:
                 raise HTTPException(status_code=404, detail="Review not found")
             
-            # Check authorization - ensure consistent string comparison
+       
             review_user_id = str(review.get("user_id", ""))
             if not review_user_id or review_user_id != str(user_id):
                 if "user" in review and isinstance(review["user"], dict):
@@ -230,21 +228,21 @@ class ReviewService:
                 else:
                     raise HTTPException(status_code=403, detail="Not authorized to update this review")
                 
-            # Update only provided fields
+         
             update_data = review_update.model_dump(exclude_unset=True)
             if not update_data:
                 raise HTTPException(status_code=400, detail="No fields to update")
                 
-            # Update timestamp
+         
             update_data["updated_at"] = datetime.now(timezone.utc)
             
-            # Update review
+        
             await self.collection.update_one(
                 {"_id": ObjectId(review_id)},
                 {"$set": update_data}
             )
             
-            # If rating changed, recalculate book average rating
+           
             if "rating" in update_data:
                 book_reviews = self.collection.find({"book_id": book_id})
                 total_rating = 0
@@ -261,11 +259,11 @@ class ReviewService:
                         {"$set": {"average_rating": avg_rating}}
                     )
             
-            # Return updated review
+          
             updated_review = await self.collection.find_one({"_id": ObjectId(review_id)})
             updated_review = self.__replace_id(updated_review)
             
-            # Get user info
+           
             try:
                 user = await self.user_collection.find_one({"_id": ObjectId(user_id)})
             except:
@@ -280,7 +278,7 @@ class ReviewService:
                     "last_name": user.get("last_name", "")
                 }
             else:
-                # Fallback if user not found
+              
                 updated_review["user"] = {
                     "id": user_id,
                     "username": "Unknown user",
